@@ -1,0 +1,54 @@
+<div class="w-full pt-20">
+  <div class="w-[800px] mx-auto space-y-4">
+    <p class="text-3xl font-bold">My Offers</p>
+    <div class="flex justify-between">
+      <button routerLink="./create" class="btn btn-primary">
+        Create Offer
+      </button>
+      <button routerLink="/offers" class="btn btn-error">Logout</button>
+    </div>
+    <table class="table table-lg border-primary border">
+      <thead>
+        <tr class="text-sm">
+          <th class="w-10">ID</th>
+          <th>Title</th>
+          <th class="w-0 min-w-28">Company</th>
+          <th class="w-0 min-w-28">Created At</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (offer of jobOffersService.jobOffers; track offer.id){
+        <tr
+          routerLink="/recruiter/offers/{{ offer.id }}"
+          routerLinkActive="active"
+          class="hover cursor-pointer"
+        >
+          <td>{{ offer.id }}</td>
+          <td>{{ offer.title }}</td>
+          <td>{{ offer.company }}</td>
+          <td>
+            {{ offer.createdAt.toLocaleString("en-GB", { year: "numeric", month:
+            "numeric", day: "numeric" }) }}
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+    <div class="join justify-center w-full">
+      @if (jobOffersService.pageInfo().number == 0) {
+      <button class="join-item btn" disabled>«</button>
+      }@else {
+      <button class="join-item btn" (click)="previousPage()">«</button>
+      } @for(page of pages(); track page){ @if (page ==
+      jobOffersService.pageInfo().number + 1 ) {
+      <button class="join-item btn btn-primary">{{ page }}</button>
+      }@else {
+      <button class="join-item btn" (click)="goToPage(page)">{{ page }}</button>
+      } } @if (jobOffersService.pageInfo().number == pages().length - 1) {
+      <button class="join-item btn" disabled>»</button>
+      }@else {
+      <button class="join-item btn" (click)="nextPage()">»</button>
+      }
+    </div>
+  </div>
+</div>

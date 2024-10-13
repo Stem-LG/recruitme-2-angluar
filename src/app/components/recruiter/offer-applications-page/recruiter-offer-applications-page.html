@@ -1,0 +1,54 @@
+<div class="w-full pt-20">
+  <div class="w-[800px] mx-auto space-y-8">
+    <div class="flex items-center gap-3">
+      <button
+        routerLink="/recruiter/offers/{{jobApplicationsService.offerId}}"
+        routerLinkActive="active"
+        class="btn btn-ghost btn-square"
+      >
+        <lucide-icon [img]="ChevronLeft" />
+      </button>
+      <p class="text-3xl font-bold">Job Applicants</p>
+    </div>
+    <table class="table table-lg border-primary border mt-4">
+      <thead>
+        <tr class="text-sm">
+          <th class="w-10">ID</th>
+          <th class="w-full">Name</th>
+          <th>Status</th>
+          <th class="min-w-40">Created At</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (application of jobApplicationsService.jobApplications; track
+        application.id){
+        <tr
+          routerLink="/recruiter/offers/{{jobApplicationsService.offerId}}/applications/{{ application.id }}"
+          routerLinkActive="active"
+          class="hover cursor-pointer"
+        >
+          <td>{{ application.id }}</td>
+          <td>{{ application.name }}</td>
+          <td>
+            @switch (application.status) { @case ('accepted'){
+            <div class="badge badge-success w-full">
+              {{ application.status }}
+            </div>
+            } @case ('pending') {
+            <div class="badge badge-warning w-full">
+              {{ application.status }}
+            </div>
+            } @case ('rejected') {
+            <div class="badge badge-error w-full">{{ application.status }}</div>
+            } }
+          </td>
+          <td>
+            {{ application.createdAt.toLocaleString("en-GB",{ year: "numeric",
+            month: "numeric", day: "numeric" }) }}
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

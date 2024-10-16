@@ -10,8 +10,17 @@ export class JobOffersService {
 
   jobOffers: jobOffer[] = []
 
-  pageInfo = signal(
+  pageInfo = signal<
     {
+      disabled: boolean,
+      number: number,
+      size: number,
+      totalElements: number,
+      totalPages: number
+    }
+  >(
+    {
+      disabled: false,
       number: 0,
       size: 5,
       totalElements: 0,
@@ -19,12 +28,22 @@ export class JobOffersService {
     }
   )
 
+  sortConfig = signal<
+    {
+      column: string,
+      direction: string
+    }
+  >({
+    column: "id",
+    direction: "asc"
+  })
+
   constructor() {
     this.fetchJobOffers()
   }
 
   fetchJobOffers() {
-    fetch(this.apiUrl + `?page=${this.pageInfo().number}&size=${this.pageInfo().size}&sort=id,desc`, {
+    fetch(this.apiUrl + `?page=${this.pageInfo().number}&size=${this.pageInfo().size}&sort=${this.sortConfig().column},${this.sortConfig().direction}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -39,18 +58,53 @@ export class JobOffersService {
           }
         ))
 
-        this.pageInfo.set(data.page)
+        this.pageInfo.set({ ...data.page, disabled: false })
 
-        console.table(
-          this.jobOffers
-        )
-        console.table(
-          this.pageInfo
-        )
       })
       .catch(error => {
         console.error(error)
       })
+  }
+
+  fetchJobOffersBySkill(skill: string) {
+    fetch(this.apiUrl + `/search/?skill=${skill}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        this.jobOffers = data.map((offer: jobOffer) => (
+          {
+            ...offer,
+            createdAt: new Date(offer.createdAt)
+          }
+        ))
+
+        this.pageInfo.update(prev => ({ ...prev, disabled: true }))
+
+      })
+      .catch(error => {
+        console.error(error)
+      })
+  }
+
+  sortResults(column: string) {
+
+    if (column == this.sortConfig().column) {
+      this.sortConfig.update((prev) => ({
+        ...prev,
+        direction: this.sortConfig().direction == "desc" ? "asc" : "desc"
+      }))
+    } else {
+      this.sortConfig.set({
+        column,
+        direction: "asc"
+      })
+    }
+
+    this.fetchJobOffers()
   }
 
   changePage(page: number) {

@@ -90,6 +90,32 @@ export class JobOffersService {
       })
   }
 
+  searchJobOffers(option: string, query: string) {
+
+    fetch(this.apiUrl + `/search/?${option}=${query}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        this.jobOffers = data.map((offer: jobOffer) => (
+          {
+            ...offer,
+            createdAt: new Date(offer.createdAt)
+          }
+        ))
+
+        this.pageInfo.update(prev => ({ ...prev, disabled: true }))
+
+      })
+      .catch(error => {
+        console.error(error)
+      })
+
+  }
+
   sortResults(column: string) {
 
     if (column == this.sortConfig().column) {

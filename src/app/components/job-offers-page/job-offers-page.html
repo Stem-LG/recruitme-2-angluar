@@ -1,24 +1,30 @@
 <div class="w-full pt-20">
-  <div class="w-[800px] mx-auto space-y-8">
+  <div class="w-[800px] mx-auto space-y-3">
     <div class="flex justify-between">
-      <div class="flex items-center gap-4">
-        <p class="text-3xl font-bold">Job Offers</p>
-        <input
-          type="text"
-          class="input input-bordered"
-          placeholder="search by skill"
-          [(ngModel)]="skillSearchValue"
-          (keyup.enter)="onSearchClick()"
-        />
-        <button class="btn btn-primary" (click)="onSearchClick()">
-          Search
-        </button>
-      </div>
+      <p class="text-3xl font-bold">Job Offers</p>
       <button routerLink="/recruiter/offers" class="btn btn-primary">
         Login
       </button>
     </div>
-    <table class="table table-lg border-primary border mt-4">
+    <div class="flex gap-4 justify-end">
+      <input
+        type="text"
+        class="input input-bordered"
+        placeholder="search query"
+        [(ngModel)]="searchQueryValue"
+        (keyup.enter)="onSearchClick()"
+      />
+      <select
+        class="select select-primary select-all"
+        [(ngModel)]="searchOptionValue"
+      >
+        <option value="title">Title</option>
+        <option value="skill">Skill</option>
+        <option value="company">Company</option>
+      </select>
+      <button class="btn btn-primary" (click)="onSearchClick()">Search</button>
+    </div>
+    <table class="table table-lg border-primary border">
       <thead>
         <tr class="text-sm [&>th]:cursor-pointer">
           <th (click)="jobOffersService.sortResults('id')" class="w-10">ID</th>

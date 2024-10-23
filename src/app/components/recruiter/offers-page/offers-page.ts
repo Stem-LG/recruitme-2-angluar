@@ -1,11 +1,12 @@
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { JobOffersService } from '../../../services/job-offers';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'recruiter-offers-page',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, FormsModule],
   providers: [JobOffersService],
   templateUrl: './offers-page.html',
 })
@@ -17,6 +18,19 @@ export class RecruiterOffersPage {
     const { totalPages } = this.jobOffersService.pageInfo()
     return Array.from({ length: totalPages }, (_, i) => i + 1)
   })
+
+  searchQueryValue: string = "";
+  searchOptionValue: string = "title";
+
+  onSearchClick() {
+
+    if (this.searchQueryValue != "") {
+      this.jobOffersService.searchJobOffers(this.searchOptionValue, this.searchQueryValue)
+    } else {
+      this.jobOffersService.fetchJobOffers()
+    }
+
+  }
 
   goToPage(page: number) {
     this.jobOffersService.changePage(page - 1)

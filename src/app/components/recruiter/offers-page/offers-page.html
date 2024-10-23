@@ -1,11 +1,29 @@
 <div class="w-full pt-20">
-  <div class="w-[800px] mx-auto space-y-4">
+  <div class="w-[800px] mx-auto space-y-3">
     <p class="text-3xl font-bold">My Offers</p>
     <div class="flex justify-between">
       <button routerLink="./create" class="btn btn-primary">
         Create Offer
       </button>
       <button routerLink="/offers" class="btn btn-error">Logout</button>
+    </div>
+    <div class="flex gap-4 justify-end">
+      <input
+        type="text"
+        class="input input-bordered"
+        placeholder="search query"
+        [(ngModel)]="searchQueryValue"
+        (keyup.enter)="onSearchClick()"
+      />
+      <select
+        class="select select-primary select-all"
+        [(ngModel)]="searchOptionValue"
+      >
+        <option value="title">Title</option>
+        <option value="skill">Skill</option>
+        <option value="company">Company</option>
+      </select>
+      <button class="btn btn-primary" (click)="onSearchClick()">Search</button>
     </div>
     <table class="table table-lg border-primary border">
       <thead>
@@ -34,6 +52,9 @@
         }
       </tbody>
     </table>
+
+    @if (!jobOffersService.pageInfo().disabled) {
+
     <div class="join justify-center w-full">
       @if (jobOffersService.pageInfo().number == 0) {
       <button class="join-item btn" disabled>«</button>
@@ -50,5 +71,7 @@
       <button class="join-item btn" (click)="nextPage()">»</button>
       }
     </div>
+
+    }
   </div>
 </div>

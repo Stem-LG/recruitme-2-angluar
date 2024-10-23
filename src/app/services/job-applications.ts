@@ -1,4 +1,4 @@
-import { inject, Injectable } from "@angular/core";
+import { inject, Injectable, signal } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 
 
@@ -11,7 +11,7 @@ export class JobApplicationsService {
 
   apiUrl = "http://localhost:3000";
 
-  jobApplications: jobApplication[] = []
+  jobApplications = signal<jobApplication[]>([])
 
   offerId: number;
 
@@ -32,12 +32,34 @@ export class JobApplicationsService {
     })
       .then(response => response.json())
       .then(data => {
-        this.jobApplications = data.map((application: jobApplication) => (
+        this.jobApplications.set(data.map((application: jobApplication) => (
           {
             ...application,
             createdAt: new Date(application.createdAt)
           }
-        ))
+        )))
+      })
+      .catch(error => {
+        console.error(error)
+      })
+  }
+
+  searchJobApplications(query: string) {
+
+    fetch(this.apiUrl + "/applications/" + this.offerId + "/search?name=" + query, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        this.jobApplications.set(data.map((application: jobApplication) => (
+          {
+            ...application,
+            createdAt: new Date(application.createdAt)
+          }
+        )))
       })
       .catch(error => {
         console.error(error)

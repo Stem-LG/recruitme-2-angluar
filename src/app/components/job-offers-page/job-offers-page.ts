@@ -19,12 +19,13 @@ export class JobOffersPage {
     return Array.from({ length: totalPages }, (_, i) => i + 1)
   })
 
-  skillSearchValue: string = "";
+  searchQueryValue: string = "";
+  searchOptionValue: string = "title";
 
   onSearchClick() {
 
-    if (this.skillSearchValue != "") {
-      this.jobOffersService.fetchJobOffersBySkill(this.skillSearchValue)
+    if (this.searchQueryValue != "") {
+      this.jobOffersService.searchJobOffers(this.searchOptionValue, this.searchQueryValue)
     } else {
       this.jobOffersService.fetchJobOffers()
     }

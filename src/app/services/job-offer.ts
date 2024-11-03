@@ -1,14 +1,12 @@
 import { inject, Injectable, signal } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { AuthService } from "./auth";
+import { authenticatedFetch } from "../lib/authenticatedFetch";
 
 
 
 
 @Injectable()
 export class JobOfferService {
-
-  authService = inject(AuthService)
 
   route = inject(ActivatedRoute)
 
@@ -47,11 +45,8 @@ export class JobOfferService {
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await fetch(this.apiUrl + `/file`, {
+    const response = await authenticatedFetch(this.apiUrl + `/file`, {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${this.authService.getToken()}`
-      },
       body: formData
     })
 
@@ -73,11 +68,10 @@ export class JobOfferService {
     }
   ) {
 
-    const savedApplication = await fetch(this.apiUrl + `/application`, {
+    const savedApplication = await authenticatedFetch(this.apiUrl + `/application`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.authService.getToken()}`
       },
       body: JSON.stringify({
         name,

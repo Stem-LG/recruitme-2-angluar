@@ -1,6 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { AuthService } from "./auth";
+import { authenticatedFetch } from "../lib/authenticatedFetch";
 
 
 
@@ -8,7 +8,6 @@ import { AuthService } from "./auth";
 @Injectable()
 export class JobApplicationService {
 
-  authService = inject(AuthService)
   route = inject(ActivatedRoute)
 
   apiUrl = "http://localhost:3000";
@@ -27,11 +26,10 @@ export class JobApplicationService {
 
   fetchJobApplication() {
 
-    fetch(this.apiUrl + "/application/" + this.applicationId, {
+    authenticatedFetch(this.apiUrl + "/application/" + this.applicationId, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.authService.getToken()}`
       }
     })
       .then(response => response.json())
@@ -59,11 +57,10 @@ export class JobApplicationService {
   }
 
   changeStatus(status: "accepted" | "pending" | "rejected") {
-    fetch(this.apiUrl + `/application/${this.applicationId}/status?status=${status}`, {
+    authenticatedFetch(this.apiUrl + `/application/${this.applicationId}/status?status=${status}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.authService.getToken()}`
       }
     }).then(_ => {
       this.jobApplication = {

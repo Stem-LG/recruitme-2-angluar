@@ -1,5 +1,5 @@
-import { inject, Injectable } from "@angular/core";
-import { AuthService } from "../auth";
+import { Injectable } from "@angular/core";
+import { authenticatedFetch } from "../../lib/authenticatedFetch";
 
 
 
@@ -8,8 +8,6 @@ export class RecruiterJobOfferService {
 
   apiUrl = "http://localhost:3000/offers";
 
-  authService = inject(AuthService)
-
   async createJobOffer(offer: {
     title: string,
     company: string,
@@ -17,11 +15,10 @@ export class RecruiterJobOfferService {
     description: string
   }) {
 
-    const response = await fetch(this.apiUrl, {
+    const response = await authenticatedFetch(this.apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.authService.getToken()}`
       },
       body: JSON.stringify(offer)
     })
@@ -33,11 +30,10 @@ export class RecruiterJobOfferService {
 
   async updateJobOffer(offer: jobOffer) {
 
-    const response = await fetch(this.apiUrl + `/${offer.id}`, {
+    const response = await authenticatedFetch(this.apiUrl + `/${offer.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.authService.getToken()}`
       },
       body: JSON.stringify(offer)
     })
@@ -48,11 +44,10 @@ export class RecruiterJobOfferService {
 
   async deleteJobOffer(offer: jobOffer) {
 
-    const response = await fetch(this.apiUrl + `/${offer.id}`, {
+    const response = await authenticatedFetch(this.apiUrl + `/${offer.id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.authService.getToken()}`
       }
     })
       .then(response => response.json())

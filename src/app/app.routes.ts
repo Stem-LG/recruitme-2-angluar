@@ -1,22 +1,60 @@
 import { Routes } from '@angular/router';
-import { JobOffersPage } from './components/job-offers-page/job-offers-page';
-import { JobOfferDetailsPage } from './components/job-offer-details-page/job-offer-details-page';
-import { JobOfferApplicationPage } from './components/job-offer-application-page/job-offer-application-page';
-import { RecruiterOffersPage } from './components/recruiter/offers-page/offers-page';
-import { RecruiterOfferDetailsPage } from './components/recruiter/offer-details-page/offer-details-page';
-import { RecruiterEditOfferPage } from './components/recruiter/edit-offer-page/recruiter-edit-offer-page';
-import { RecruiterCreateOfferPage } from './components/recruiter/create-offer-page/recruiter-create-offer-page';
-import { RecruiterOfferApplicationsPage } from './components/recruiter/offer-applications-page/recruiter-offer-applications-page';
-import { RecruiterOfferApplicationDetailsPage } from './components/recruiter/offer-application-details-page/recruiter-offer-application-details-page';
+import { JobOffersPage } from './pages/job-offers-page/job-offers-page';
+import { JobOfferDetailsPage } from './pages/job-offer-details-page/job-offer-details-page';
+import { JobOfferApplicationPage } from './pages/job-offer-application-page/job-offer-application-page';
+import { RecruiterOffersPage } from './pages/recruiter/offers-page/offers-page';
+import { RecruiterOfferDetailsPage } from './pages/recruiter/offer-details-page/offer-details-page';
+import { RecruiterEditOfferPage } from './pages/recruiter/edit-offer-page/recruiter-edit-offer-page';
+import { RecruiterCreateOfferPage } from './pages/recruiter/create-offer-page/recruiter-create-offer-page';
+import { RecruiterOfferApplicationsPage } from './pages/recruiter/offer-applications-page/recruiter-offer-applications-page';
+import { RecruiterOfferApplicationDetailsPage } from './pages/recruiter/offer-application-details-page/recruiter-offer-application-details-page';
+import { LoginPage } from './pages/auth/login/login-page';
+import { ForbiddenPage } from './pages/forbidden/forbidden-page';
+import { AuthGuard } from './app.guard';
+import { RegisterPage } from './pages/auth/register/register-page';
+import { inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from './services/auth';
+
+
+
 
 export const routes: Routes = [
 
   {
     path: "",
-    redirectTo: "offers",
-    pathMatch: "full"
-  },
+    resolve: {
+      redirect: () => {
+        const authService = inject(AuthService);
+        const router = inject(Router);
 
+        const user = authService.getUser();
+        if (!user || user.role === 'USER') {
+          return router.navigate(['/offers']);
+        }
+
+        return router.navigate(['/recruiter/offers']);
+      }
+    },
+    pathMatch: "full",
+    component: JobOffersPage
+  },
+  {
+    path: "forbidden",
+    component: ForbiddenPage
+  },
+  {
+    path: "login",
+    component: LoginPage,
+    canActivate: [AuthGuard],
+    data: { requiresAuth: false }
+  },
+  {
+    path: "register",
+    component: RegisterPage,
+    canActivate: [AuthGuard],
+    data: { requiresAuth: false }
+  },
   {
     path: "offers",
     children: [
@@ -30,7 +68,9 @@ export const routes: Routes = [
       },
       {
         path: ":offerId/apply",
-        component: JobOfferApplicationPage
+        component: JobOfferApplicationPage,
+        canActivate: [AuthGuard],
+        data: { role: 'USER' }
       },
     ]
   },
@@ -43,6 +83,8 @@ export const routes: Routes = [
 
   {
     path: "recruiter/offers",
+    canActivate: [AuthGuard],
+    data: { role: 'RECRUITER' },
     children: [
       {
         path: "",

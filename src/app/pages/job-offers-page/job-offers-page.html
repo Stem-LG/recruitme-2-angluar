@@ -1,0 +1,71 @@
+<div class="w-full pt-20">
+  <div class="w-[800px] mx-auto space-y-3">
+    <app-bar title="Job Offers" />
+    <div class="flex gap-4 justify-end">
+      <input
+        type="text"
+        class="input input-bordered"
+        placeholder="search query"
+        [(ngModel)]="searchQueryValue"
+        (keyup.enter)="onSearchClick()"
+      />
+      <select
+        class="select select-primary select-all"
+        [(ngModel)]="searchOptionValue"
+      >
+        <option value="title">Title</option>
+        <option value="skill">Skill</option>
+        <option value="company">Company</option>
+      </select>
+      <button class="btn btn-primary" (click)="onSearchClick()">Search</button>
+    </div>
+    <table class="table table-lg border-primary border">
+      <thead>
+        <tr class="text-sm [&>th]:cursor-pointer">
+          <th (click)="jobOffersService.sortResults('id')" class="w-10">ID</th>
+          <th (click)="jobOffersService.sortResults('title')">Title</th>
+          <th (click)="jobOffersService.sortResults('company')" class="w-0">
+            Company
+          </th>
+          <th (click)="jobOffersService.sortResults('createdAt')" class="w-0">
+            Created At
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (offer of jobOffersService.jobOffers; track offer.id){
+        <tr
+          routerLink="/offers/{{ offer.id }}"
+          routerLinkActive="active"
+          class="hover cursor-pointer"
+        >
+          <td>{{ offer.id }}</td>
+          <td>{{ offer.title }}</td>
+          <td>{{ offer.company }}</td>
+          <td>
+            {{ offer.createdAt.toLocaleString("en-GB", { year: "numeric", month:
+            "numeric", day: "numeric" }) }}
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+
+    <div class="join justify-center w-full">
+      @if (jobOffersService.pageInfo().number == 0) {
+      <button class="join-item btn" disabled>«</button>
+      }@else {
+      <button class="join-item btn" (click)="previousPage()">«</button>
+      } @for(page of pages(); track page){ @if (page ==
+      jobOffersService.pageInfo().number + 1 ) {
+      <button class="join-item btn btn-primary">{{ page }}</button>
+      }@else {
+      <button class="join-item btn" (click)="goToPage(page)">{{ page }}</button>
+      } } @if (jobOffersService.pageInfo().number == pages().length - 1) {
+      <button class="join-item btn" disabled>»</button>
+      }@else {
+      <button class="join-item btn" (click)="nextPage()">»</button>
+      }
+    </div>
+  </div>
+</div>

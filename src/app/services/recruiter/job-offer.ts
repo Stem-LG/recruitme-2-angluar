@@ -1,11 +1,14 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
+import { AuthService } from "../auth";
 
 
 
 @Injectable()
 export class RecruiterJobOfferService {
 
-  apiUrl = "http://localhost:3000";
+  apiUrl = "http://localhost:3000/offers";
+
+  authService = inject(AuthService)
 
   async createJobOffer(offer: {
     title: string,
@@ -14,10 +17,11 @@ export class RecruiterJobOfferService {
     description: string
   }) {
 
-    const response = await fetch(this.apiUrl + "/offers", {
+    const response = await fetch(this.apiUrl, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.authService.getToken()}`
       },
       body: JSON.stringify(offer)
     })
@@ -29,10 +33,11 @@ export class RecruiterJobOfferService {
 
   async updateJobOffer(offer: jobOffer) {
 
-    const response = await fetch(this.apiUrl + `/offers/${offer.id}`, {
+    const response = await fetch(this.apiUrl + `/${offer.id}`, {
       method: 'PUT',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.authService.getToken()}`
       },
       body: JSON.stringify(offer)
     })
@@ -43,10 +48,11 @@ export class RecruiterJobOfferService {
 
   async deleteJobOffer(offer: jobOffer) {
 
-    const response = await fetch(this.apiUrl + `/offers/${offer.id}`, {
+    const response = await fetch(this.apiUrl + `/${offer.id}`, {
       method: 'DELETE',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.authService.getToken()}`
       }
     })
       .then(response => response.json())

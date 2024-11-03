@@ -1,4 +1,5 @@
-import { Injectable, signal } from "@angular/core";
+import { inject, Injectable, signal } from "@angular/core";
+import { AuthService } from "./auth";
 
 
 
@@ -6,13 +7,14 @@ import { Injectable, signal } from "@angular/core";
 @Injectable()
 export class JobOffersService {
 
+  authService = inject(AuthService)
+
   apiUrl = "http://localhost:3000/offers";
 
   jobOffers: jobOffer[] = []
 
   pageInfo = signal<
     {
-      disabled: boolean,
       number: number,
       size: number,
       totalElements: number,
@@ -20,7 +22,6 @@ export class JobOffersService {
     }
   >(
     {
-      disabled: false,
       number: 0,
       size: 5,
       totalElements: 0,
@@ -38,81 +39,55 @@ export class JobOffersService {
     direction: "asc"
   })
 
-  constructor() {
-    this.fetchJobOffers()
-  }
+  searchConfig = signal<
+    {
+      option: string,
+      query: string,
+    } | null
+  >(null)
 
-  fetchJobOffers() {
-    fetch(this.apiUrl + `?page=${this.pageInfo().number}&size=${this.pageInfo().size}&sort=${this.sortConfig().column},${this.sortConfig().direction}`, {
+  async fetchJobOffers(recruiterMode: boolean = false) {
+
+    let requestUrl = this.apiUrl;
+
+    const searchConfig = this.searchConfig();
+
+    const user = this.authService.user();
+
+    const sortingParams = `page=${this.pageInfo().number}&size=${this.pageInfo().size}&sort=${this.sortConfig().column},${this.sortConfig().direction}`
+
+    if (searchConfig != null) {
+      const { option, query } = searchConfig;
+      if (recruiterMode && user) {
+        requestUrl += `/search/byRecruiterAnd${option.charAt(0).toUpperCase() + option.slice(1)}?recruiterId=${user.id}&${option}=${query}&${sortingParams}`;
+      } else {
+        requestUrl += `/search/by${option.charAt(0).toUpperCase() + option.slice(1)}?${option}=${query}&${sortingParams}`;
+      }
+    } else {
+      if (recruiterMode && user) {
+        requestUrl += `/search/byRecruiter?recruiterId=${user.id}&${sortingParams}`;
+      } else {
+        requestUrl += `?${sortingParams}`;
+      }
+    }
+
+    const result = await fetch(requestUrl, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
       }
-    })
-      .then(response => response.json())
-      .then(data => {
-        this.jobOffers = data._embedded.jobOffers.map((offer: jobOffer) => (
-          {
-            ...offer,
-            createdAt: new Date(offer.createdAt)
-          }
-        ))
+    });
 
-        this.pageInfo.set({ ...data.page, disabled: false })
+    const response = await result.json()
 
-      })
-      .catch(error => {
-        console.error(error)
-      })
-  }
-
-  fetchJobOffersBySkill(skill: string) {
-    fetch(this.apiUrl + `/search/?skill=${skill}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
+    this.jobOffers = response._embedded.jobOffers.map((offer: jobOffer) => (
+      {
+        ...offer,
+        createdAt: new Date(offer.createdAt)
       }
-    })
-      .then(response => response.json())
-      .then(data => {
-        this.jobOffers = data.map((offer: jobOffer) => (
-          {
-            ...offer,
-            createdAt: new Date(offer.createdAt)
-          }
-        ))
+    ))
 
-        this.pageInfo.update(prev => ({ ...prev, disabled: true }))
-
-      })
-      .catch(error => {
-        console.error(error)
-      })
-  }
-
-  searchJobOffers(option: string, query: string) {
-
-    fetch(this.apiUrl + `/search/?${option}=${query}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(response => response.json())
-      .then(data => {
-        this.jobOffers = data.map((offer: jobOffer) => (
-          {
-            ...offer,
-            createdAt: new Date(offer.createdAt)
-          }
-        ))
-
-        this.pageInfo.update(prev => ({ ...prev, disabled: true }))
-
-      })
-      .catch(error => {
-        console.error(error)
-      })
+    this.pageInfo.set({ ...response.page, disabled: false })
 
   }
 

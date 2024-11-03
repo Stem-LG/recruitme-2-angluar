@@ -1,5 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
+import { AuthService } from "./auth";
 
 
 
@@ -7,6 +8,7 @@ import { ActivatedRoute } from "@angular/router";
 @Injectable()
 export class JobApplicationService {
 
+  authService = inject(AuthService)
   route = inject(ActivatedRoute)
 
   apiUrl = "http://localhost:3000";
@@ -28,7 +30,8 @@ export class JobApplicationService {
     fetch(this.apiUrl + "/application/" + this.applicationId, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.authService.getToken()}`
       }
     })
       .then(response => response.json())
@@ -44,39 +47,28 @@ export class JobApplicationService {
   }
 
   acceptApplication() {
-    fetch(this.apiUrl + "/application", {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        ...this.jobApplication,
-        status: "accepted"
-      })
-    }).then(_ => {
-      this.jobApplication = {
-        ...this.jobApplication!,
-        status: "accepted"
-      }
-    }).catch(error => {
-      console.error(error)
-    })
+    this.changeStatus("accepted")
+  }
+
+  pendingApplication() {
+    this.changeStatus("pending")
   }
 
   rejectApplication() {
-    fetch(this.apiUrl + "/application", {
+    this.changeStatus("rejected")
+  }
+
+  changeStatus(status: "accepted" | "pending" | "rejected") {
+    fetch(this.apiUrl + `/application/${this.applicationId}/status?status=${status}`, {
       method: 'PUT',
       headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        ...this.jobApplication,
-        status: "rejected"
-      })
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.authService.getToken()}`
+      }
     }).then(_ => {
       this.jobApplication = {
         ...this.jobApplication!,
-        status: "rejected"
+        status
       }
     }).catch(error => {
       console.error(error)

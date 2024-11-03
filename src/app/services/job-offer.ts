@@ -1,5 +1,6 @@
 import { inject, Injectable, signal } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
+import { AuthService } from "./auth";
 
 
 
@@ -7,11 +8,14 @@ import { ActivatedRoute } from "@angular/router";
 @Injectable()
 export class JobOfferService {
 
+  authService = inject(AuthService)
+
+  route = inject(ActivatedRoute)
+
   apiUrl = "http://localhost:3000";
 
   jobOffer = signal<jobOffer | null>(null)
 
-  route = inject(ActivatedRoute)
 
   constructor() {
     this.fetchJobOffer()
@@ -45,11 +49,11 @@ export class JobOfferService {
 
     const response = await fetch(this.apiUrl + `/file`, {
       method: 'POST',
-
+      headers: {
+        'Authorization': `Bearer ${this.authService.getToken()}`
+      },
       body: formData
     })
-
-    console.log(response)
 
     return response.json()
   }
@@ -72,7 +76,8 @@ export class JobOfferService {
     const savedApplication = await fetch(this.apiUrl + `/application`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.authService.getToken()}`
       },
       body: JSON.stringify({
         name,

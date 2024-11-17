@@ -3,11 +3,12 @@ import { RouterLink } from '@angular/router';
 import { JobOffersService } from '../../../services/job-offers';
 import { FormsModule } from '@angular/forms';
 import { AppBarComponent } from "../../../components/app-bar/app-bar";
+import { JobOfferCardComponent } from "../../../components/job-offer-card/job-offer-card";
 
 @Component({
   selector: 'recruiter-offers-page',
   standalone: true,
-  imports: [RouterLink, FormsModule, AppBarComponent],
+  imports: [FormsModule, AppBarComponent, JobOfferCardComponent],
   providers: [JobOffersService],
   templateUrl: './offers-page.html',
 })

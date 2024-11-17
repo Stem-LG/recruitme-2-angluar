@@ -12,7 +12,8 @@ export class RecruiterJobOfferService {
     title: string,
     company: string,
     skills: string,
-    description: string
+    description: string,
+    images: string[]
   }) {
 
     const response = await authenticatedFetch(this.apiUrl, {

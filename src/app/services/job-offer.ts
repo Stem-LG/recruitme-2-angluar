@@ -41,29 +41,20 @@ export class JobOfferService {
       })
   }
 
-  async uploadResume(file: File) {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const response = await authenticatedFetch(this.apiUrl + `/file`, {
-      method: 'POST',
-      body: formData
-    })
-
-    return response.json()
-  }
 
 
   async applyForJob(
     {
       name,
       email,
-      resumeUrl,
+      resumeFile,
       motivation
     }: {
       name: string,
       email: string,
-      resumeUrl: string,
+      resumeFile: {
+        id: number
+      },
       motivation: string
     }
   ) {
@@ -76,7 +67,7 @@ export class JobOfferService {
       body: JSON.stringify({
         name,
         email,
-        resumeUrl,
+        resumeFile: { id: resumeFile.id },
         motivation,
         jobOffer: { id: this.jobOffer()?.id }
       })

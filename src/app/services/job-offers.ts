@@ -23,7 +23,7 @@ export class JobOffersService {
   >(
     {
       number: 0,
-      size: 5,
+      size: 9,
       totalElements: 0,
       totalPages: 0
     }

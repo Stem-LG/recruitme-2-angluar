@@ -1,16 +1,16 @@
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ChevronLeft, LucideAngularModule } from 'lucide-angular';
 import { JobOfferService } from '../../services/job-offer';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AppBarComponent } from "../../components/app-bar/app-bar";
 import { AuthService } from '../../services/auth';
+import { FileService } from '../../services/file';
 
 @Component({
   selector: 'job-offer-application-page',
   standalone: true,
-  imports: [RouterLink, LucideAngularModule, ReactiveFormsModule, AppBarComponent],
-  providers: [JobOfferService, AuthService],
+  imports: [LucideAngularModule, ReactiveFormsModule, AppBarComponent],
+  providers: [JobOfferService, AuthService, FileService],
   templateUrl: './job-offer-application-page.html',
 })
 export class JobOfferApplicationPage {
@@ -18,6 +18,8 @@ export class JobOfferApplicationPage {
   jobOfferService = inject(JobOfferService)
 
   authService = inject(AuthService);
+
+  fileService = inject(FileService);
 
   readonly ChevronLeft = ChevronLeft;
 
@@ -43,14 +45,14 @@ export class JobOfferApplicationPage {
 
     //upload resume
 
-    const fileUrl = await this.jobOfferService.uploadResume(this.applicationForm.get('resume')?.value!);
+    const DBFile = await this.fileService.uploadFile(this.applicationForm.get('resume')?.value!);
 
     //send application
 
     this.jobOfferService.applyForJob({
       name: this.applicationForm.get('name')?.value!,
       email: this.applicationForm.get('email')?.value!,
-      resumeUrl: fileUrl.fileDownloadUri,
+      resumeFile: { id: DBFile.id },
       motivation: this.applicationForm.get('motivation')?.value!,
     }).then(() => {
       this.success = true;

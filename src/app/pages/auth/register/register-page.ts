@@ -35,8 +35,6 @@ export class RegisterPage {
       return;
     }
 
-    console.log('Registering user with username:', username, 'email:', email, 'password:', password, 'role:', role);
-
     const isRegistered = await this.authService.register(username, email, password, role);
     if (!isRegistered) {
       alert('Registration failed');

@@ -5,4 +5,6 @@ type jobOffer = {
   skills: string,
   company: string,
   createdAt: Date,
+  createdBy: number,
+  images: string[]
 }

@@ -54,6 +54,12 @@ export class AuthService {
     return true;
   }
 
+  async verify(token: string): Promise<Boolean> {
+    return await fetch(`${authUrl}/verify/${token}`).then((response) => {
+      return response.status === 200;
+    });
+  }
+
   getToken(): string | null {
     return localStorage.getItem("token");
   }

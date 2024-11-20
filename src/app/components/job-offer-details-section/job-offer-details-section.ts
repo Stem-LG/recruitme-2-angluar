@@ -1,4 +1,4 @@
-import { Component, inject, Input } from "@angular/core";
+import { Component, inject, Input, signal } from "@angular/core";
 import { Router, RouterLink } from "@angular/router";
 import { AuthService } from "../../services/auth";
 import { ChevronLeft, Images, Lock, LucideAngularModule } from 'lucide-angular';
@@ -30,6 +30,14 @@ export class JobOfferDetailsSectionComponent {
   jobOfferService = inject(JobOfferService)
   fileService = inject(FileService)
   router = inject(Router)
+
+  selectedImage = "";
+
+  openImage(image: string) {
+    this.selectedImage = image;
+    //@ts-ignore
+    image_modal.showModal();
+  }
 
   deleteOffer() {
     this.recruiterJobOfferService.deleteJobOffer(this.jobOfferService.jobOffer()!).then(() => {

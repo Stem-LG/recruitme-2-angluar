@@ -3,6 +3,7 @@
     title="My Offers"
     [createButton]="{label: 'Create Offer',link:'./create'}"
   />
+
   <div class="flex gap-4 justify-end">
     <input
       type="text"
@@ -21,6 +22,10 @@
     </select>
     <button class="btn btn-primary" (click)="onSearchClick()">Search</button>
   </div>
+
+  @if (jobOffersService.jobOffers.length == 0) {
+  <p class="text-3xl font-bold py-32 mx-auto text-center">No offers found</p>
+  }
 
   <div class="flex flex-wrap gap-4 w-full justify-center">
     @for (offer of jobOffersService.jobOffers; track offer.id){

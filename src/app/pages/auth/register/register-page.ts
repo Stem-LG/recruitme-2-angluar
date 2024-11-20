@@ -36,11 +36,11 @@ export class RegisterPage {
     }
 
     const isRegistered = await this.authService.register(username, email, password, role);
-    if (!isRegistered) {
-      alert('Registration failed');
+    if (isRegistered) {
+      alert('Registration successful, please verify your email');
+      this.router.navigate(['register/verify']);
     } else {
-      alert('Registration successful, please login');
-      this.router.navigate(['/login']);
+      alert('Registration failed');
     }
   }
 

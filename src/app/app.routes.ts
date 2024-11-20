@@ -15,6 +15,8 @@ import { RegisterPage } from './pages/auth/register/register-page';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from './services/auth';
+import { VerificationPage } from './pages/auth/verification/verification-page';
+import { UsersPage } from './pages/admin/users/users-page';
 
 
 
@@ -28,9 +30,13 @@ export const routes: Routes = [
         const authService = inject(AuthService);
         const router = inject(Router);
 
+
         const user = authService.getUser();
+        console.log(user)
         if (!user || user.role === 'USER') {
           return router.navigate(['/offers']);
+        } else if (user.role === 'ADMIN') {
+          return router.navigate(['/admin']);
         }
 
         return router.navigate(['/recruiter/offers']);
@@ -51,9 +57,18 @@ export const routes: Routes = [
   },
   {
     path: "register",
-    component: RegisterPage,
     canActivate: [AuthGuard],
-    data: { requiresAuth: false }
+    data: { requiresAuth: false },
+    children: [
+      {
+        path: "",
+        component: RegisterPage,
+      },
+      {
+        path: "verify",
+        component: VerificationPage,
+      }
+    ]
   },
   {
     path: "offers",
@@ -110,6 +125,22 @@ export const routes: Routes = [
         path: ":offerId/applications/:applicationId",
         component: RecruiterOfferApplicationDetailsPage
       },
+    ]
+  },
+
+  {
+    path: "admin",
+    canActivate: [AuthGuard],
+    data: { role: 'ADMIN' },
+    children: [
+      {
+        path: "",
+        component: UsersPage
+      },
+      {
+        path: ":userId",
+        component: UsersPage
+      }
     ]
   }
 ];

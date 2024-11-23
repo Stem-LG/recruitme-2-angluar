@@ -18,7 +18,7 @@ export class VerificationPage {
   readonly ChevronLeft = ChevronLeft;
 
   verificationForm = new FormGroup({
-    code: new FormControl('code')
+    code: new FormControl('')
   });
 
   async onSubmit() {

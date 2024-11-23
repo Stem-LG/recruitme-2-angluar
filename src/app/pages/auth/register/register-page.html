@@ -74,7 +74,7 @@
             type="checkbox"
             id="role"
             class="toggle toggle-primary"
-            [checked]="registerForm.get('role')?.value === 'ADMIN'"
+            [checked]="registerForm.get('role')?.value === 'RECRUITER'"
             (change)="toggleRole()"
           />
           <p>Recruiter</p>
@@ -83,9 +83,19 @@
           Already have an account?
           <a routerLink="/login" class="link">Login here</a>
         </p>
-        <button class="w-full btn btn-primary mt-2" type="submit">
-          Register
+
+        <button
+          class="w-full btn btn-primary mt-2"
+          type="submit"
+          [disabled]="isLoading"
+        >
+          @if(isLoading){
+          <lucide-icon [img]="LoaderCircle" class="animate-spin" />
+          } Register
         </button>
+        @if (error) {
+        <p class="text-white bg-red-600 py-1 px-3 mt-2">{{error}}</p>
+        }
       </form>
     </div>
   </div>

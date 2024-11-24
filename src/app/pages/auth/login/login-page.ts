@@ -1,19 +1,18 @@
 import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { KeycloakService } from 'keycloak-angular';
 import { ChevronLeft, LucideAngularModule } from 'lucide-angular';
-import { AuthService } from '../../../services/auth';
 
 @Component({
   selector: 'login-page',
   standalone: true,
   imports: [RouterLink, LucideAngularModule, ReactiveFormsModule],
-  providers: [AuthService],
   templateUrl: './login-page.html',
 })
 export class LoginPage {
 
-  authService = inject(AuthService);
+  keycloak = inject(KeycloakService);
   router = inject(Router)
 
   readonly ChevronLeft = ChevronLeft;
@@ -28,17 +27,17 @@ export class LoginPage {
     if (!email || !password) {
       return;
     }
-    const isValid = await this.authService.login(email, password);
+    // const isValid = await this.keycloak.login(email, password);
 
-    if (!isValid) {
-      alert('Invalid email or password');
-    }
+    // if (!isValid) {
+    //   alert('Invalid email or password');
+    // }
     else {
-      if (this.authService.getUser()?.role === 'ADMIN') {
-        this.router.navigate(['/recruiter']);
-      } else {
-        this.router.navigate(['/']);
-      }
+      // if (this.keycloak.getUser()?.role === 'ADMIN') {
+      //   this.router.navigate(['/recruiter']);
+      // } else {
+      //   this.router.navigate(['/']);
+      // }
     }
   }
 }

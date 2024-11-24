@@ -2,17 +2,17 @@ import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ChevronLeft, LucideAngularModule } from 'lucide-angular';
-import { AuthService } from '../../../services/auth';
+// import { AuthService } from '../../../services/auth';
 
 @Component({
   selector: 'verification-page',
   standalone: true,
   imports: [RouterLink, LucideAngularModule, ReactiveFormsModule],
-  providers: [AuthService],
+  // providers: [AuthService],
   templateUrl: './verification-page.html',
 })
 export class VerificationPage {
-  authService = inject(AuthService);
+  // authService = inject(AuthService);
   router = inject(Router)
 
   readonly ChevronLeft = ChevronLeft;
@@ -27,13 +27,13 @@ export class VerificationPage {
       return;
     }
 
-    const verified = await this.authService.verify(code);
-    if (verified) {
-      alert('Registration successful, please login');
-      this.router.navigate(['/login']);
-    } else {
-      alert('Registration failed');
-    }
+    // const verified = await this.authService.verify(code);
+    // if (verified) {
+    //   alert('Registration successful, please login');
+    //   this.router.navigate(['/login']);
+    // } else {
+    //   alert('Registration failed');
+    // }
   }
 
 }

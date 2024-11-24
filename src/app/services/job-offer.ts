@@ -1,6 +1,6 @@
 import { inject, Injectable, signal } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { authenticatedFetch } from "../lib/authenticatedFetch";
+import { AuthenticatedFetchService } from "./authenticatedFetch";
 
 
 
@@ -9,6 +9,8 @@ import { authenticatedFetch } from "../lib/authenticatedFetch";
 export class JobOfferService {
 
   route = inject(ActivatedRoute)
+
+  authFetch = inject(AuthenticatedFetchService)
 
   apiUrl = "http://localhost:3000";
 
@@ -59,7 +61,7 @@ export class JobOfferService {
     }
   ) {
 
-    const savedApplication = await authenticatedFetch(this.apiUrl + `/application`, {
+    const savedApplication = await this.authFetch.fetch(this.apiUrl + `/application`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

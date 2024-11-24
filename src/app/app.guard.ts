@@ -1,43 +1,33 @@
 // auth.guard.ts
 import { Injectable } from '@angular/core';
-import { CanActivate, Router, ActivatedRouteSnapshot } from '@angular/router';
-import { AuthService } from './services/auth';
+import { Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { KeycloakAuthGuard, KeycloakService } from 'keycloak-angular';
 
 @Injectable({
   providedIn: 'root',
 })
-export class AuthGuard implements CanActivate {
-  constructor(private authService: AuthService, private router: Router) { }
+export class AuthGuard extends KeycloakAuthGuard {
 
-  canActivate(route: ActivatedRouteSnapshot): boolean {
-    const requiresAuth = route.data['requiresAuth'] ?? true;
-    const requiredRole = route.data['role'] as string;
 
-    const user = this.authService.getUser();
+  constructor(protected override router: Router, protected keycloak: KeycloakService) {
+    super(router, keycloak);
+  }
 
-    const isAuthenticated = !!user;
 
-    // Handle (login, register)
-    if (!requiresAuth) {
-      if (isAuthenticated) {
-        this.router.navigate(['/forbidden']); // Redirect logged in users
-        return false;
+  isAccessAllowed(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
+    return new Promise(async (resolve) => {
+      if (!this.authenticated) {
+        await this.keycloakAngular.login();
       }
-      return true;
-    }
 
-    // Handle authenticated routes
-    if (!isAuthenticated) {
-      this.router.navigate(['/forbidden']);
-      return false;
-    }
+      const requiredRoles = route.data['roles'] || [];
+      const hasAccess = requiredRoles.length === 0 || requiredRoles.every((role: string) => this.roles.includes(role));
 
-    // Check role if specified
-    if (requiredRole && requiredRole != user.role) {
-      this.router.navigate(['/forbidden']);
-      return false;
-    }
+      if (!hasAccess) {
+        this.router.navigate(['/forbidden']);
+      }
 
-    return true;
+      resolve(hasAccess);
+    });
   }
 }

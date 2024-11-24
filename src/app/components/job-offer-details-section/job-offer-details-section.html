@@ -27,13 +27,13 @@
   </div>
   }@else {
   <p class="mt-1">No images available</p>
-  } @switch (role) { @case ("USER") { @if (authService.user()) {
+  } @switch (role) { @case ("USER") { @if (keycloak.isLoggedIn()) {
   <button class="btn btn-primary mt-3" routerLink="./apply">Apply</button>
   }@else {
   <button class="btn btn-primary mt-3" disabled>
     <lucide-icon [img]="Lock" size="20px" /> Login to apply
   </button>
-  } } @case ("RECRUITER") { @if( offer.createdBy == authService.user()!.id) {
+  } } @case ("RECRUITER") {
   <div class="flex gap-2 mt-3">
     <button routerLink="./applications" class="btn btn-primary">
       Applicants List
@@ -58,12 +58,7 @@
       </form>
     </dialog>
   </div>
-  }@else {
-  <button class="btn btn-primary mt-3" disabled>
-    <lucide-icon [img]="Lock" size="20px" /> You can only edit your own job
-    offers
-  </button>
-  } } } }@else{
+  } } }@else{
   <div class="w-full h-96 flex items-center justify-center">
     <p>404 Job offer not found</p>
   </div>

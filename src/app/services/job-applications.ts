@@ -1,6 +1,6 @@
 import { inject, Injectable, signal } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { authenticatedFetch } from "../lib/authenticatedFetch";
+import { AuthenticatedFetchService } from "./authenticatedFetch";
 
 
 
@@ -9,6 +9,8 @@ import { authenticatedFetch } from "../lib/authenticatedFetch";
 export class JobApplicationsService {
 
   route = inject(ActivatedRoute)
+
+  authFetch = inject(AuthenticatedFetchService)
 
   apiUrl = "http://localhost:3000";
 
@@ -25,7 +27,7 @@ export class JobApplicationsService {
 
   fetchJobApplications() {
 
-    authenticatedFetch(this.apiUrl + "/applications/" + this.offerId, {
+    this.authFetch.fetch(this.apiUrl + "/applications/" + this.offerId, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -47,7 +49,7 @@ export class JobApplicationsService {
 
   searchJobApplications(query: string) {
 
-    authenticatedFetch(this.apiUrl + "/applications/" + this.offerId + "/search?name=" + query, {
+    this.authFetch.fetch(this.apiUrl + "/applications/" + this.offerId + "/search?name=" + query, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

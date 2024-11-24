@@ -2,17 +2,17 @@ import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ChevronLeft, LoaderCircle, LucideAngularModule } from 'lucide-angular';
-import { AuthService } from '../../../services/auth';
+// import { AuthService } from '../../../services/auth';
 
 @Component({
   selector: 'register-page',
   standalone: true,
   imports: [RouterLink, LucideAngularModule, ReactiveFormsModule],
-  providers: [AuthService],
+  // providers: [AuthService],
   templateUrl: './register-page.html',
 })
 export class RegisterPage {
-  authService = inject(AuthService);
+  // authService = inject(AuthService);
   router = inject(Router)
 
   readonly ChevronLeft = ChevronLeft;
@@ -42,15 +42,15 @@ export class RegisterPage {
     }
 
     this.isLoading = true;
-    const isRegistered = await this.authService.register(username, email, password, role);
-    this.isLoading = false;
-    if (isRegistered) {
-      alert('Registration successful, please verify your email');
-      this.router.navigate(['register/verify']);
-    } else {
-      // alert('Registration failed');
-      this.error = 'Registration failed';
-    }
+    // const isRegistered = await this.authService.register(username, email, password, role);
+    // this.isLoading = false;
+    // if (isRegistered) {
+    //   alert('Registration successful, please verify your email');
+    //   this.router.navigate(['register/verify']);
+    // } else {
+    //   // alert('Registration failed');
+    //   this.error = 'Registration failed';
+    // }
   }
 
   // Helper function to toggle role

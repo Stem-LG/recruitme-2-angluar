@@ -1,10 +1,10 @@
-import { Component, inject, Input, signal } from "@angular/core";
+import { Component, inject, Input } from "@angular/core";
 import { Router, RouterLink } from "@angular/router";
-import { AuthService } from "../../services/auth";
 import { ChevronLeft, Images, Lock, LucideAngularModule } from 'lucide-angular';
 import { RecruiterJobOfferService } from "../../services/recruiter/job-offer";
 import { JobOfferService } from "../../services/job-offer";
 import { FileService } from "../../services/file";
+import { KeycloakService } from "keycloak-angular";
 
 
 
@@ -13,7 +13,7 @@ import { FileService } from "../../services/file";
   selector: "job-offer-details-section",
   standalone: true,
   imports: [RouterLink, LucideAngularModule],
-  providers: [AuthService, RecruiterJobOfferService, JobOfferService, FileService],
+  providers: [RecruiterJobOfferService, JobOfferService, FileService],
   templateUrl: "./job-offer-details-section.html",
 })
 export class JobOfferDetailsSectionComponent {
@@ -25,11 +25,13 @@ export class JobOfferDetailsSectionComponent {
   @Input({ required: true }) offer!: jobOffer | null;
   @Input() role: User["role"] = "USER";
 
-  authService = inject(AuthService)
+  keycloak = inject(KeycloakService)
   recruiterJobOfferService = inject(RecruiterJobOfferService)
   jobOfferService = inject(JobOfferService)
   fileService = inject(FileService)
   router = inject(Router)
+
+  profile = null;
 
   selectedImage = "";
 

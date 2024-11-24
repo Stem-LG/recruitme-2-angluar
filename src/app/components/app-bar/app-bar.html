@@ -19,12 +19,12 @@
     </a>
     }
   </div>
-  @if (authService.user()) {
+  @if (keycloak.isLoggedIn()) {
   <div class="flex items-center gap-4">
-    <p class="font-medium">{{authService.user()?.username}}</p>
+    <p class="font-medium">{{username}}</p>
     <button (click)="logout()" class="btn btn-error">Logout</button>
   </div>
   }@else{
-  <a routerLink="/login" class="btn btn-primary">Login</a>
+  <button (click)="login()" class="btn btn-primary">Login</button>
   }
 </div>

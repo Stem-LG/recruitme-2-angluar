@@ -3,21 +3,18 @@ import { ChevronLeft, LucideAngularModule } from 'lucide-angular';
 import { JobOfferService } from '../../services/job-offer';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AppBarComponent } from "../../components/app-bar/app-bar";
-import { AuthService } from '../../services/auth';
 import { FileService } from '../../services/file';
 
 @Component({
   selector: 'job-offer-application-page',
   standalone: true,
   imports: [LucideAngularModule, ReactiveFormsModule, AppBarComponent],
-  providers: [JobOfferService, AuthService, FileService],
+  providers: [JobOfferService, FileService],
   templateUrl: './job-offer-application-page.html',
 })
 export class JobOfferApplicationPage {
 
   jobOfferService = inject(JobOfferService)
-
-  authService = inject(AuthService);
 
   fileService = inject(FileService);
 
@@ -25,7 +22,7 @@ export class JobOfferApplicationPage {
 
   applicationForm = new FormGroup({
     name: new FormControl(''),
-    email: new FormControl(this.authService.user()?.email),
+    email: new FormControl(''),
     resume: new FormControl<File | null>(null),
     motivation: new FormControl(''),
   });

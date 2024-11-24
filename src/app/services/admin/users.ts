@@ -1,5 +1,5 @@
-import { Injectable, signal } from "@angular/core";
-import { authenticatedFetch } from "../../lib/authenticatedFetch";
+import { inject, Injectable, signal } from "@angular/core";
+import { AuthenticatedFetchService } from "../authenticatedFetch";
 
 
 
@@ -7,6 +7,9 @@ import { authenticatedFetch } from "../../lib/authenticatedFetch";
 
 @Injectable()
 export class UsersService {
+
+  authFetch = inject(AuthenticatedFetchService  )
+
   apiUrl = "http://localhost:3001/users";
 
   users = signal<User[]>([]);
@@ -18,7 +21,7 @@ export class UsersService {
   }
 
   async getUsers() {
-    const response = await authenticatedFetch(this.apiUrl).then((response) => response.json());
+    const response = await this.authFetch.fetch(this.apiUrl).then((response) => response.json());
 
     this.users.set(response);
 
@@ -26,7 +29,7 @@ export class UsersService {
   }
 
   async getUser(id: string) {
-    const response = await authenticatedFetch(`${this.apiUrl}/${id}`).then((response) => response.json());
+    const response = await this.authFetch.fetch(`${this.apiUrl}/${id}`).then((response) => response.json());
 
     this.user.set(response);
 
@@ -35,7 +38,7 @@ export class UsersService {
   }
 
   async updateUser(user: any) {
-    const response = await authenticatedFetch(`${this.apiUrl}/${user.id}`, {
+    const response = await this.authFetch.fetch(`${this.apiUrl}/${user.id}`, {
       method: 'PUT',
       body: JSON.stringify(user)
     }).then((response) => response.json());
@@ -46,7 +49,7 @@ export class UsersService {
   }
 
   async deleteUser(id: string) {
-    const response = await authenticatedFetch(`${this.apiUrl}/${id}`, {
+    const response = await this.authFetch.fetch(`${this.apiUrl}/${id}`, {
       method: 'DELETE'
     });
 

@@ -14,9 +14,9 @@ import { AuthGuard } from './app.guard';
 import { RegisterPage } from './pages/auth/register/register-page';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from './services/auth';
 import { VerificationPage } from './pages/auth/verification/verification-page';
 import { UsersPage } from './pages/admin/users/users-page';
+import { KeycloakService } from 'keycloak-angular';
 
 
 
@@ -27,19 +27,25 @@ export const routes: Routes = [
     path: "",
     resolve: {
       redirect: () => {
-        const authService = inject(AuthService);
         const router = inject(Router);
 
+        const keycloak = inject(KeycloakService);
 
-        const user = authService.getUser();
-        console.log(user)
-        if (!user || user.role === 'USER') {
-          return router.navigate(['/offers']);
-        } else if (user.role === 'ADMIN') {
-          return router.navigate(['/admin']);
+        const loggedIn = keycloak.isLoggedIn();
+
+        const roles = keycloak.getUserRoles();
+
+        if (loggedIn) {
+
+          if (roles.includes('RECRUITER')) {
+            return router.navigate(['/recruiter/offers']);
+          } else if (roles.includes('ADMIN')) {
+            return router.navigate(['/admin']);
+          }
+
         }
 
-        return router.navigate(['/recruiter/offers']);
+        return router.navigate(['/offers']);
       }
     },
     pathMatch: "full",
@@ -52,13 +58,9 @@ export const routes: Routes = [
   {
     path: "login",
     component: LoginPage,
-    canActivate: [AuthGuard],
-    data: { requiresAuth: false }
   },
   {
     path: "register",
-    canActivate: [AuthGuard],
-    data: { requiresAuth: false },
     children: [
       {
         path: "",
@@ -85,7 +87,7 @@ export const routes: Routes = [
         path: ":offerId/apply",
         component: JobOfferApplicationPage,
         canActivate: [AuthGuard],
-        data: { role: 'USER' }
+        data: { roles: ['USER'] }
       },
     ]
   },
@@ -99,7 +101,7 @@ export const routes: Routes = [
   {
     path: "recruiter/offers",
     canActivate: [AuthGuard],
-    data: { role: 'RECRUITER' },
+    data: { roles: ['RECRUITER'] },
     children: [
       {
         path: "",
@@ -131,7 +133,7 @@ export const routes: Routes = [
   {
     path: "admin",
     canActivate: [AuthGuard],
-    data: { role: 'ADMIN' },
+    data: { roles: ['ADMIN'] },
     children: [
       {
         path: "",

@@ -1,5 +1,5 @@
 import { inject, Injectable, signal } from "@angular/core";
-import { AuthService } from "./auth";
+import { KeycloakService } from "keycloak-angular";
 
 
 
@@ -7,7 +7,7 @@ import { AuthService } from "./auth";
 @Injectable()
 export class JobOffersService {
 
-  authService = inject(AuthService)
+  keycloak = inject(KeycloakService)
 
   apiUrl = "http://localhost:3000/offers";
 
@@ -52,7 +52,12 @@ export class JobOffersService {
 
     const searchConfig = this.searchConfig();
 
-    const user = this.authService.user();
+    let user;
+
+    try {
+      user = await this.keycloak.loadUserProfile()
+    } catch (error) {
+    }
 
     const sortingParams = `page=${this.pageInfo().number}&size=${this.pageInfo().size}&sort=${this.sortConfig().column},${this.sortConfig().direction}`
 
